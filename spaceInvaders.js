@@ -1,6 +1,7 @@
 let ship;
 let invaders = [];
 let shipBullets = [];
+let score = 0;
 
 function setup() {
   createCanvas(1280, 720);
@@ -14,9 +15,10 @@ function setup() {
 }
 
 function draw() {
-  background(50);
+  background(0);
   ship.show();
   ship.move();
+  showHUD();
 
   let edge = false;
   for (let i = 0; i < 10; i++) {
@@ -31,6 +33,7 @@ function draw() {
       }
       for (let k = shipBullets.length - 1; k >= 0; k--) {
         if (shipBullets[k].hits(invaders[i][j])) {
+          score += 20;
           invaders[i].splice(j, 1, null);
           shipBullets.splice(k, 1);
         }
