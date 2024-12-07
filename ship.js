@@ -1,7 +1,8 @@
 class Ship {
   constructor() {
     this.x = width / 2;
-    this.velocity = 20;
+    this.velocity = 10;
+    this.xdir = 0;
   }
 
   show() {
@@ -10,7 +11,11 @@ class Ship {
     rect(this.x, height - 20, 30, 30);
   }
 
-  move(dir) {
-    this.x += this.velocity * dir;
+  setDir(dir) {
+    this.xdir = dir;
+  }
+
+  move() {
+    this.x += this.velocity * this.xdir;
   }
 }

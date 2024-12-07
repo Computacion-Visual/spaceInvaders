@@ -16,14 +16,24 @@ function setup() {
 function draw() {
   background(50);
   ship.show();
+  ship.move();
 
   let edge = false;
   for (let i = 0; i < 10; i++) {
     for (let j = 0; j < 5; j++) {
+      if (invaders[i][j] === null) {
+        continue;
+      }
       invaders[i][j].show();
       invaders[i][j].move();
       if (invaders[i][j].x > width || invaders[i][j].x < 0) {
         edge = true;
+      }
+      for (let k = shipBullets.length - 1; k >= 0; k--) {
+        if (shipBullets[k].hits(invaders[i][j])) {
+          invaders[i].splice(j, 1, null);
+          shipBullets.splice(k, 1);
+        }
       }
     }
   }
@@ -31,6 +41,9 @@ function draw() {
   if (edge) {
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 5; j++) {
+        if (invaders[i][j] === null) {
+          continue;
+        }
         invaders[i][j].shiftDown();
       }
     }
@@ -45,12 +58,18 @@ function draw() {
   }
 }
 
+function keyReleased() {
+  if (keyCode === RIGHT_ARROW || keyCode === LEFT_ARROW) {
+    ship.setDir(0);
+  }
+}
+
 function keyPressed() {
   if (key === " ") {
     shipBullets.push(new Bullet(ship.x, height - 20));
   } else if (keyCode === RIGHT_ARROW) {
-    ship.move(1);
+    ship.setDir(1);
   } else if (keyCode === LEFT_ARROW) {
-    ship.move(-1);
+    ship.setDir(-1);
   }
 }
