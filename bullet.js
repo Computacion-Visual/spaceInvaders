@@ -1,10 +1,17 @@
+/** Class representing a bullet **/
 class Bullet {
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
   constructor(x, y) {
     this.x = x;
     this.y = y;
     this.speed = 10;
-    this.radius = 3;
-    this.damage = 10;
+    this.width = 2;
+    this.height = 8;
+    this.sprite = new Sprite(playerBulletSprites, this.width, this.height, 0.1);
+    this.radius = 8;
   }
 
   update() {
@@ -12,8 +19,8 @@ class Bullet {
   }
 
   draw() {
-    fill(255);
-    ellipse(this.x, this.y, this.radius * 2);
+    this.sprite.show(this.x, this.y);
+    this.sprite.animate();
   }
 
   hits(invader) {
