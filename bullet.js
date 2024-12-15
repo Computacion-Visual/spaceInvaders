@@ -1,21 +1,32 @@
+let playerBulletSprites = [];
+let invaderABulletSprites = [];
+let invaderBBulletSprites = [];
+let invaderCBulletSprites = [];
+
 /** Class representing a bullet **/
 class Bullet {
   /**
    * @param {number} x
    * @param {number} y
    */
-  constructor(x, y) {
+  constructor(x, y, type) {
     this.x = x;
     this.y = y;
-    this.speed = 10;
-    this.width = 2;
-    this.height = 8;
-    this.sprite = new Sprite(playerBulletSprites, this.width, this.height, 0.1);
-    this.radius = 8;
+    this.speed = getBulletVel(type);
+    this.type = type;
+    this.width = 6;
+    this.height = 14;
+    this.sprite = new Sprite(
+      getBulletSprites(type),
+      this.width,
+      this.height,
+      0.3,
+    );
+    this.radius = 16;
   }
 
   update() {
-    this.y -= this.speed;
+    this.y += this.speed;
   }
 
   draw() {
@@ -33,5 +44,37 @@ class Bullet {
     } else {
       return false;
     }
+  }
+}
+
+/** @param {string} type */
+function getBulletSprites(type) {
+  switch (type) {
+    case "player":
+      return playerBulletSprites;
+    case "a":
+      return invaderABulletSprites;
+    case "b":
+      return invaderBBulletSprites;
+    case "c":
+      return invaderCBulletSprites;
+    default:
+      return playerBulletSprites;
+  }
+}
+
+/** @param {string} type */
+function getBulletVel(type) {
+  switch (type) {
+    case "player":
+      return -10;
+    case "a":
+      return 10;
+    case "b":
+      return 5;
+    case "c":
+      return 5;
+    default:
+      return 10;
   }
 }

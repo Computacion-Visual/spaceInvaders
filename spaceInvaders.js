@@ -1,14 +1,4 @@
-let ship;
-let ship_sprite = [];
-let invaders = [];
-let invaderA_sprites = [];
-let invaderB_sprites = [];
-let invaderC_sprites = [];
-let shipBullets = [];
 let score = 0;
-let playerBulletSprites = [];
-let explosionSprites = [];
-let explosions = [];
 
 function preload() {
   ship_sprite = loadShipSprites();
@@ -17,6 +7,9 @@ function preload() {
   invaderC_sprites = loadInvaderCSprites();
   playerBulletSprites = loadPlayerBulletSprites();
   explosionSprites = loadExplosionSprites();
+  invaderABulletSprites = loadInvaderABulletSprites();
+  invaderBBulletSprites = loadInvaderBBulletSprites();
+  invaderCBulletSprites = loadInvaderCBulletSprites();
 }
 
 function setup() {
@@ -51,13 +44,16 @@ function draw() {
       }
       invaders[i][j].show();
       invaders[i][j].move();
+      if (invaders[i][j].gonnaShoot()) {
+        invaders[i][j].shoot();
+      }
       if (invaders[i][j].x > width || invaders[i][j].x < 0) {
         edge = true;
       }
       for (let k = shipBullets.length - 1; k >= 0; k--) {
         if (shipBullets[k].hits(invaders[i][j])) {
           explosions.push(new Explosion(invaders[i][j].x, invaders[i][j].y));
-          score += 20;
+          score += getInvaderScores(invaders[i][j].type);
           invaders[i].splice(j, 1, null);
           shipBullets.splice(k, 1);
         }
@@ -90,6 +86,13 @@ function draw() {
       explosions.splice(i, 1);
     }
   }
+  for (let i = invaderBullets.length - 1; i >= 0; i--) {
+    invaderBullets[i].update();
+    invaderBullets[i].draw();
+    if (invaderBullets[i].y > height) {
+      invaderBullets.splice(i, 1);
+    }
+  }
 }
 
 function keyReleased() {
@@ -100,7 +103,7 @@ function keyReleased() {
 
 function keyPressed() {
   if (key === " ") {
-    shipBullets.push(new Bullet(ship.x, height - 20));
+    shipBullets.push(new Bullet(ship.x, height - 20, "player"));
   } else if (keyCode === RIGHT_ARROW) {
     ship.setDir(1);
   } else if (keyCode === LEFT_ARROW) {

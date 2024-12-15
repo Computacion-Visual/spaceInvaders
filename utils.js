@@ -57,3 +57,30 @@ function loadExplosionSprites() {
   }
   return explosion_sprites;
 }
+
+function loadInvaderABulletSprites() {
+  let bullet_sprites = [];
+  const length = 4;
+  for (let i = 1; i <= length; i++) {
+    bullet_sprites.push(loadImage(`assets/bullet/bulletA/bulletA${i}.png`));
+  }
+  return bullet_sprites;
+}
+
+function loadInvaderBBulletSprites() {
+  let bullet_sprites = [];
+  const length = 4;
+  for (let i = 1; i <= length; i++) {
+    bullet_sprites.push(loadImage(`assets/bullet/bulletB/bulletB${i}.png`));
+  }
+  return bullet_sprites;
+}
+
+function loadInvaderCBulletSprites() {
+  let bullet_sprites = [];
+  const length = 4;
+  for (let i = 1; i <= length; i++) {
+    bullet_sprites.push(loadImage(`assets/bullet/bulletC/bulletC${i}.png`));
+  }
+  return bullet_sprites;
+}

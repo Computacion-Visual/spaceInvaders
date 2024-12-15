@@ -1,3 +1,6 @@
+let explosionSprites = [];
+let explosions = [];
+
 class Explosion {
   constructor(x, y) {
     this.x = x;
