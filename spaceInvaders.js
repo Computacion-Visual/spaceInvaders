@@ -36,47 +36,23 @@ function draw() {
   frameRate(30);
   background(0);
 
-   if (isWinner) {
-    // Mostrar el mensaje de "Winner"
-    textAlign(CENTER, CENTER);
-    textSize(64);
-    fill(255, 255, 0);
-    text("WINNER", width / 2, height / 2);
-
-    // Mostrar el score debajo del "Winner"
-    textSize(32);
-    fill(255, 255, 255); // Color blanco para el puntaje
-    text("Score: " + score, width / 2, height / 2 + 60); // Ajusta la posición según sea necesario
-    return; // Detenemos la ejecución del resto del juego
+  if (isWinner) {
+    showWinner();
   }
 
   ship.show();
   ship.move();
   showHUD();
-  
-  let edge = false;
-  let allNull = true; // Variable para comprobar si todos los invasores han sido destruidos
-  
-   // Verifica las colisiones de las balas de los invasores con el barco
-  for (let i = invaderBullets.length - 1; i >= 0; i--) {
-  let bullet = invaderBullets[i]; // Asegúrate de definir la bala en cada iteración
-  if (bullet.hits(ship)) {
-    // Si la bala toca el barco, el juego termina
-    gameOver();
-    return;
-    }
-    if (bullet.y > height) {
-      invaderBullets.splice(i, 1);  // Eliminar bala si sale de la pantalla
-    }
-  }
 
-  
+  let edge = false;
+  let allInvadersDestroyed = true; // Variable para comprobar si todos los invasores han sido destruidos
+
   for (let i = 0; i < 10; i++) {
     for (let j = 0; j < 5; j++) {
       if (invaders[i][j] === null) {
         continue;
       }
-      allNull = false; // Si encontramos al menos un invasor, no hemos ganado todavía
+      allInvadersDestroyed = false; // Si encontramos al menos un invasor, no hemos ganado todavía
       invaders[i][j].show();
       invaders[i][j].move();
       if (invaders[i][j].gonnaShoot()) {
@@ -98,7 +74,7 @@ function draw() {
     }
   }
 
-  if (allNull) {
+  if (allInvadersDestroyed) {
     isWinner = true; // Todos los invasores han sido destruidos
   }
 
@@ -131,6 +107,9 @@ function draw() {
   for (let i = invaderBullets.length - 1; i >= 0; i--) {
     invaderBullets[i].update();
     invaderBullets[i].draw();
+    if (invaderBullets[i].hits(ship)) {
+      showGameOver();
+    }
     if (invaderBullets[i].y > height) {
       invaderBullets.splice(i, 1);
     }
@@ -138,7 +117,7 @@ function draw() {
 }
 
 // Función para manejar el fin del juego
-function gameOver() {
+function showGameOver() {
   textAlign(CENTER, CENTER);
   textSize(64);
   fill(255, 0, 0); // Rojo para el "Game Over"
@@ -149,6 +128,18 @@ function gameOver() {
   text("Score: " + score, width / 2, height / 2 + 60); // Ajusta la posición según sea necesario
 
   noLoop(); // Detener el juego
+}
+
+function showWinner() {
+  textAlign(CENTER, CENTER);
+  textSize(64);
+  fill(255, 255, 0);
+  text("WINNER", width / 2, height / 2);
+
+  textSize(32);
+  fill(255, 255, 255);
+  text("Score: " + score, width / 2, height / 2 + 60);
+  noLoop();
 }
 
 function keyReleased() {

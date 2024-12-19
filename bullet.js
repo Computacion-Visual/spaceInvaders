@@ -20,7 +20,7 @@ class Bullet {
       getBulletSprites(type),
       this.width,
       this.height,
-      0.3
+      0.3,
     );
     this.radius = 16;
   }
@@ -33,21 +33,18 @@ class Bullet {
     this.sprite.show(this.x, this.y);
     this.sprite.animate();
   }
-  
-   // Método para verificar si la bala ha colisionado con un objeto
+
+  // Método para verificar si la bala ha colisionado con un objeto
   hits(target) {
-    // Verifica si el target no es null ni undefined y tiene las propiedades necesarias
-    if (!target || target.x === undefined || target.y === undefined || target.width === undefined || target.height === undefined) {
-      return false; // Si el target no está definido o es inválido, no hay colisión
+    if (target === null) {
+      return false;
     }
-  
-    // Comprobar colisión simple con un objetivo (como un invasor o el jugador)
-    return (
-      this.x > target.x - target.width / 2 &&
-      this.x < target.x + target.width / 2 &&
-      this.y > target.y - target.height / 2 &&
-      this.y < target.y + target.height / 2
-    );
+    const d = dist(this.x, this.y, target.x, target.y);
+    if (d < this.radius + target.width / 2) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
