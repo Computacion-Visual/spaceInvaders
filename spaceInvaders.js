@@ -60,6 +60,7 @@ function draw() {
    // Verifica las colisiones de las balas de los invasores con el barco
   for (let i = invaderBullets.length - 1; i >= 0; i--) {
   let bullet = invaderBullets[i]; // Asegúrate de definir la bala en cada iteración
+  console.log(bullet.hits(ship));
   if (bullet.hits(ship)) {
     // Si la bala toca el barco, el juego termina
     gameOver();
