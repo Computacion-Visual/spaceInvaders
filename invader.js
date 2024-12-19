@@ -17,13 +17,13 @@ class Invader {
     this.type = type;
     this.width = 40;
     this.height = 40;
-    this.speed = 3;
+    this.speed = globalInvaderSpeed;
     this.direction = 1;
     this.sprite = new Sprite(
       getInvaderSprites(type),
       this.width,
       this.height,
-      0.1,
+      0.1
     );
   }
 
@@ -33,7 +33,7 @@ class Invader {
   }
 
   move() {
-    this.x += this.speed * this.direction;
+    this.x += globalInvaderSpeed * this.direction;
   }
 
   shiftDown() {
@@ -42,17 +42,31 @@ class Invader {
   }
 
   gonnaShoot() {
+    let shootChance = 0; // Inicializa la probabilidad de disparo
+
+    // Modificamos la probabilidad de disparo según el tipo de invasor y la velocidad global
     switch (this.type) {
       case "c":
-        return random(1) < 0.00005;
+        shootChance = 0.0005 + globalInvaderSpeed * 0.002; // Aumento de probabilidad con la velocidad
+        break;
       case "b":
-        return random(1) < 0.0001;
+        shootChance = 0.001 + globalInvaderSpeed * 0.003;
+        break;
       case "a":
-        return random(1) < 0.0002;
+        shootChance = 0.002 + globalInvaderSpeed * 0.004;
+        break;
       default:
-        return random(1) < 0.00005;
+        shootChance = 0.0005 + globalInvaderSpeed * 0.002;
+        break;
     }
-  }
+
+    // Controlamos que la probabilidad no sea superior a 1
+    shootChance = Math.min(shootChance, 0.0003); // Limitamos la probabilidad máxima para evitar disparos demasiado rápidos
+
+    // Disparar si la probabilidad es mayor que un número aleatorio
+    return random(1) < shootChance;
+}
+
 
   shoot() {
     invaderBullets.push(new Bullet(this.x, this.y, this.type));

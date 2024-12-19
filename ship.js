@@ -1,4 +1,3 @@
-let ship;
 let ship_sprite = [];
 let shipBullets = [];
 
@@ -23,5 +22,7 @@ class Ship {
 
   move() {
     this.x += this.velocity * this.xdir;
+    // Restringe el movimiento dentro de los límites de la pantalla
+    this.x = constrain(this.x, 0 + this.sprite.width / 2, width - this.sprite.width / 2);
   }
 }
