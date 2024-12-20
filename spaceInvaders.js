@@ -18,6 +18,7 @@ function setup() {
   globalInvaderSpeed = Math.min(globalInvaderSpeed + 0.1, 10); // Velocidad máxima de 10
   createCanvas(1280, 720);
   ship = new Ship();
+  shield = new Shield( 100, 100, 0 );
   for (let i = 0; i < 10; i++) {
     invaders.push([]);
     for (let j = 0; j < 5; j++) {
