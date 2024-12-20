@@ -95,3 +95,12 @@ function loadShipExplosionSprites() {
   }
   return explosion_sprites;
 }
+
+function loadUFOSprites() {
+  let ufo_sprites = [];
+  const length = 1;
+  for (let i = 1; i <= length; i++) {
+    ufo_sprites.push(loadImage(`assets/ufo/ufo${i}.png`));
+  }
+  return ufo_sprites;
+}

@@ -68,7 +68,7 @@ function getBulletSprites(type) {
 function getBulletVel(type) {
   switch (type) {
     case "player":
-      return -10;
+      return -20;
     case "a":
       return 10;
     case "b":

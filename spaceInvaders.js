@@ -1,11 +1,13 @@
 let score = 0;
-let escudos = 5;
+const escudos = 5;
 let globalInvaderSpeed = 1;
 let highScore = 0;
 let spawnAnimation = true;
 let animationIndex = 0;
 const invadersWidth = 5;
 const invadersHeight = 10;
+let ufo = null;
+let showUFO = false;
 
 function preload() {
   ship_sprite = loadShipSprites();
@@ -18,6 +20,7 @@ function preload() {
   invaderBBulletSprites = loadInvaderBBulletSprites();
   invaderCBulletSprites = loadInvaderCBulletSprites();
   shipExplosionSprites = loadShipExplosionSprites();
+  UFO_sprites = loadUFOSprites();
 }
 
 function setup() {
@@ -103,7 +106,7 @@ function draw() {
           deleteBullet = true;
           shipBullets.splice(k, 1);
           // Incrementa la velocidad global de los invasores
-          globalInvaderSpeed += 0.1;
+          globalInvaderSpeed += 0.025;
         }
         if (deleteBullet) {
           shipBullets.splice(k, 1);
@@ -113,11 +116,44 @@ function draw() {
     }
   }
 
+  if (random(1) < 0.001 && !showUFO) {
+    showUFO = true;
+    if (random(1) < 0.5) {
+      ufo = new Invader(0, 100, "ufo");
+    } else {
+      ufo = new Invader(width, 100, "ufo");
+      ufo.direction = -1;
+    }
+  }
+
+  if (showUFO) {
+    ufo.show();
+    ufo.move();
+    if (ufo.x > width) {
+      showUFO = false;
+    } else if (ufo.x < 0) {
+      showUFO = false;
+    }
+    for (let k = shipBullets.length - 1; k >= 0; k--) {
+      if (ufo == null) {
+        continue;
+      }
+      if (shipBullets[k].hits(ufo)) {
+        explosions.push(new Explosion(ufo.x, ufo.y, "invader"));
+        score += 100;
+        showUFO = false;
+        ufo = null;
+        shipBullets.splice(k, 1);
+      }
+    }
+  }
+
   if (allInvadersDestroyed) {
     spawnAnimation = true;
     shipBullets = [];
     invaderBullets = [];
     explosions = [];
+    ufo = null;
     spawnInvaders();
     allInvadersDestroyed = false;
   }
@@ -204,11 +240,11 @@ function spawnInvaders() {
     invaders.push([]);
     for (let j = 0; j < invadersWidth; j++) {
       if (j === 0) {
-        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "a"));
+        invaders[i].push(new Invader(150 + i * 50, 150 + j * 50, "a"));
       } else if (j === 1 || j === 2) {
-        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "b"));
+        invaders[i].push(new Invader(150 + i * 50, 150 + j * 50, "b"));
       } else {
-        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "c"));
+        invaders[i].push(new Invader(150 + i * 50, 150 + j * 50, "c"));
       }
     }
   }
@@ -230,7 +266,7 @@ function spawnInvadersAnimation(index) {
 function spawnShields() {
   const espaciado = (width - 2 * 50) / escudos + 1;
   for (let i = 0; i < escudos; i++) {
-    shields.push(new Shield(i * espaciado + 50, height - 250, 0, 6, 7));
+    shields.push(new Shield(i * espaciado + 50, height - 200, 0, 6, 7));
   }
 }
 

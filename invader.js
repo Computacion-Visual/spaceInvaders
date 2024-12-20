@@ -2,6 +2,7 @@ let invaders = [];
 let invaderA_sprites = [];
 let invaderB_sprites = [];
 let invaderC_sprites = [];
+let UFO_sprites = [];
 let invaderBullets = [];
 
 /** Class representing an invader */
@@ -15,9 +16,9 @@ class Invader {
     this.x = x;
     this.y = y;
     this.type = type;
-    this.width = 16 * 2.5;
-    this.height = 16 * 2.5;
-    this.speed = globalInvaderSpeed;
+    this.width = type === "ufo" ? 48 * 2 : 16 * 2;
+    this.height = type === "ufo" ? 21 * 2 : 16 * 2;
+    this.speed = type === "ufo" ? 3 * globalInvaderSpeed : globalInvaderSpeed;
     this.direction = 1;
     this.sprite = new Sprite(
       getInvaderSprites(type),
@@ -36,7 +37,7 @@ class Invader {
   }
 
   move() {
-    this.x += globalInvaderSpeed * this.direction;
+    this.x += this.speed * this.direction;
   }
 
   shiftDown() {
@@ -57,6 +58,9 @@ class Invader {
         break;
       case "a":
         shootChance = 0.002 + globalInvaderSpeed * 0.004;
+        break;
+      case "ufo":
+        shootChance = 0;
         break;
       default:
         shootChance = 0.0005 + globalInvaderSpeed * 0.002;
@@ -84,6 +88,8 @@ function getInvaderSprites(type) {
       return invaderB_sprites;
     case "a":
       return invaderA_sprites;
+    case "ufo":
+      return UFO_sprites;
     default:
       return invaderA_sprites;
   }
@@ -98,6 +104,8 @@ function getInvaderScores(type) {
       return 20;
     case "a":
       return 40;
+    case "ufo":
+      return 100;
     default:
       return 10;
   }
