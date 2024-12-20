@@ -49,7 +49,7 @@ function loadPlayerBulletSprites() {
   return bullet_sprites;
 }
 
-function loadExplosionSprites() {
+function loadInvaderExplosionSprites() {
   let explosion_sprites = [];
   const length = 1;
   for (let i = 1; i <= length; i++) {
@@ -83,4 +83,15 @@ function loadInvaderCBulletSprites() {
     bullet_sprites.push(loadImage(`assets/bullet/bulletC/bulletC${i}.png`));
   }
   return bullet_sprites;
+}
+
+function loadShipExplosionSprites() {
+  let explosion_sprites = [];
+  const length = 1;
+  for (let i = 1; i <= length; i++) {
+    explosion_sprites.push(
+      loadImage(`assets/explosion/ship_explosion${i}.png`),
+    );
+  }
+  return explosion_sprites;
 }

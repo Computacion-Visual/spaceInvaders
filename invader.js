@@ -15,15 +15,15 @@ class Invader {
     this.x = x;
     this.y = y;
     this.type = type;
-    this.width = 40;
-    this.height = 40;
+    this.width = 16 * 2.5;
+    this.height = 16 * 2.5;
     this.speed = globalInvaderSpeed;
     this.direction = 1;
     this.sprite = new Sprite(
       getInvaderSprites(type),
       this.width,
       this.height,
-      0.1
+      0.1,
     );
   }
 
@@ -65,8 +65,7 @@ class Invader {
 
     // Disparar si la probabilidad es mayor que un número aleatorio
     return random(1) < shootChance;
-}
-
+  }
 
   shoot() {
     invaderBullets.push(new Bullet(this.x, this.y, this.type));
