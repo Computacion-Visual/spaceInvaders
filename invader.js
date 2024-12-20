@@ -31,6 +31,9 @@ class Invader {
     this.sprite.show(this.x, this.y);
     this.sprite.animate();
   }
+  showNoAnimation() {
+    this.sprite.show(this.x, this.y);
+  }
 
   move() {
     this.x += globalInvaderSpeed * this.direction;
