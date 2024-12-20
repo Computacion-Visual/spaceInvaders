@@ -21,8 +21,9 @@ function setup() {
   ship = new Ship();
   
   //Crea escudos
+  let espaciado = (width - 2 * 50) / escudos + 1;
   for (let i = 0; i < escudos; i++) {
-	shields.push(new Shield( i* width/4 + 50, height/4 *3,0,6,7));
+	shields.push(new Shield( i * espaciado + 50 , height/4 * 3,0,6,7));
   }
   
   for (let i = 0; i < 10; i++) {
@@ -62,28 +63,52 @@ function draw() {
 
   for (let i = 0; i < 10; i++) {
     for (let j = 0; j < 5; j++) {
-      if (invaders[i][j] === null) {
-        continue;
-      }
-      allInvadersDestroyed = false; // Si encontramos al menos un invasor, no hemos ganado todavía
-      invaders[i][j].show();
-      invaders[i][j].move();
-      if (invaders[i][j].gonnaShoot()) {
-        invaders[i][j].shoot();
-      }
-      if (invaders[i][j].x > width || invaders[i][j].x < 0) {
-        edge = true;
-      }
-      for (let k = shipBullets.length - 1; k >= 0; k--) {
-        if (shipBullets[k].hits(invaders[i][j])) {
-          explosions.push(new Explosion(invaders[i][j].x, invaders[i][j].y));
-          score += getInvaderScores(invaders[i][j].type);
-          invaders[i].splice(j, 1, null);
-          shipBullets.splice(k, 1);
-          // Incrementa la velocidad global de los invasores
-          globalInvaderSpeed += 0.1;
-        }
-      }
+		if (invaders[i][j] === null) {
+			continue;
+		}
+		allInvadersDestroyed = false; // Si encontramos al menos un invasor, no hemos ganado todavía
+		invaders[i][j].show();
+		invaders[i][j].move();
+		if (invaders[i][j].gonnaShoot()) {
+			invaders[i][j].shoot();
+		}
+		if (invaders[i][j].x > width || invaders[i][j].x < 0) {
+			edge = true;
+		}
+		//Verifica colision balas nave con invasores
+		
+
+		//Verifica colision balas nave con invasores
+		for (let k = 0; k < shipBullets.length; k++) {
+			let eliminar = false;
+			for (let s = 0; s < shields.length; s++) {
+				let shield = shields[s];
+				for (let p = 0; p < shield.shieldParts.length; p++) {
+					if (shipBullets[k].hits(shield.shieldParts[p])) {
+						if (shield.shieldParts[p].getHit()) {
+							explosions.push(new Explosion(shield.shieldParts[p].x + ancho/2, shield.shieldParts[p].y));
+							eliminar = true;
+							break;
+						}
+					}
+				}
+				if (eliminar) {
+					break;
+				}
+			}
+			if (shipBullets[k].hits(invaders[i][j])) {
+				eliminar = true;
+				explosions.push(new Explosion(invaders[i][j].x, invaders[i][j].y));
+				score += getInvaderScores(invaders[i][j].type);
+				invaders[i].splice(j, 1, null);
+				// Incrementa la velocidad global de los invasores
+				globalInvaderSpeed += 0.1;
+			}
+			if (eliminar) {
+				shipBullets.splice(k, 1);
+				break;
+			}
+		}
     }
   }
 
@@ -102,6 +127,7 @@ function draw() {
     }
   }
 
+  //Limite de tablero
   for (let i = shipBullets.length - 1; i >= 0; i--) {
     shipBullets[i].update();
     shipBullets[i].draw();
@@ -116,10 +142,32 @@ function draw() {
       explosions.splice(i, 1);
     }
   }
-
+  //Colision de balas de invasores
   for (let i = invaderBullets.length - 1; i >= 0; i--) {
     invaderBullets[i].update();
     invaderBullets[i].draw();
+	let eliminado = false;
+	//Con escudos
+	for (let j = 0; j < shields.length; j++) {
+		let shield = shields[j];
+		for (let p = 0; p < shield.shieldParts.length; p++) {
+			if (invaderBullets[i].hits(shield.shieldParts[p])) {
+				if (shield.shieldParts[p].getHit()) {
+					explosions.push(new Explosion(shield.shieldParts[p].x + ancho/2, shield.shieldParts[p].y));
+					eliminado = true;
+					break;
+				}
+			}
+		}
+		if (eliminado) {
+			break;
+		}
+	}
+	if (eliminado) {
+		invaderBullets.splice(i, 1);
+		break;
+	}
+	//Con nave
     if (invaderBullets[i].hits(ship)) {
       showGameOver();
     }

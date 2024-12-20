@@ -20,13 +20,14 @@ class shieldPart {
 		noStroke();
 		fill(this.color);
 		rect(this.x, this.y, this.width, this.height);
-		//fill(0, 0, 255);
-		//textSize();
-		//text(i, this.x, this.y + 50);
 	}
 	getHit() {
-		this.tipo = "b";
-		this.color = color(0, 0, 0);
+		if (this.tipo == "a") {
+			this.tipo = "b";
+			this.color = color(0, 0, 0);
+			return true;
+		}
+		return false;
 	}
 }
 
