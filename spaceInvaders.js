@@ -1,5 +1,6 @@
 let score = 0;
 let globalInvaderSpeed = 3;
+let escudos = 5;
 let isWinner = false; // Variable para rastrear si el jugador ha ganado
 
 function preload() {
@@ -18,7 +19,12 @@ function setup() {
   globalInvaderSpeed = Math.min(globalInvaderSpeed + 0.1, 10); // Velocidad máxima de 10
   createCanvas(1280, 720);
   ship = new Ship();
-  shield = new Shield( 100, 100, 0 );
+  
+  //Crea escudos
+  for (let i = 0; i < escudos; i++) {
+	shields.push(new Shield( i* width/4 + 50, height/4 *3,0,6,7));
+  }
+  
   for (let i = 0; i < 10; i++) {
     invaders.push([]);
     for (let j = 0; j < 5; j++) {
@@ -43,6 +49,12 @@ function draw() {
 
   ship.show();
   ship.move();
+  
+  //Muestra el escudo
+  for (let i = 0; i < shields.length; i++) {
+	shields[i].show();
+  }
+  
   showHUD();
 
   let edge = false;
