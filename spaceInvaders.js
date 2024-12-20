@@ -1,6 +1,10 @@
 let score = 0;
-let globalInvaderSpeed = 3;
-let isWinner = false; // Variable para rastrear si el jugador ha ganado
+let globalInvaderSpeed = 1;
+let highScore = 0;
+let spawnAnimation = true;
+let animationIndex = 0;
+const invadersWidth = 5;
+const invadersHeight = 10;
 
 function preload() {
   ship_sprite = loadShipSprites();
@@ -8,37 +12,25 @@ function preload() {
   invaderB_sprites = loadInvaderBSprites();
   invaderC_sprites = loadInvaderCSprites();
   playerBulletSprites = loadPlayerBulletSprites();
-  explosionSprites = loadExplosionSprites();
+  invaderExplosionSprites = loadInvaderExplosionSprites();
   invaderABulletSprites = loadInvaderABulletSprites();
   invaderBBulletSprites = loadInvaderBBulletSprites();
   invaderCBulletSprites = loadInvaderCBulletSprites();
+  shipExplosionSprites = loadShipExplosionSprites();
 }
 
 function setup() {
   globalInvaderSpeed = Math.min(globalInvaderSpeed + 0.1, 10); // Velocidad máxima de 10
   createCanvas(1280, 720);
   ship = new Ship();
-  for (let i = 0; i < 10; i++) {
-    invaders.push([]);
-    for (let j = 0; j < 5; j++) {
-      if (j === 0) {
-        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "a"));
-      } else if (j === 1 || j === 2) {
-        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "b"));
-      } else {
-        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "c"));
-      }
-    }
-  }
+  ship_lives = 3;
+  highScore = localStorage.getItem("highScore") || 0;
+  spawnInvaders();
 }
 
 function draw() {
   frameRate(30);
   background(0);
-
-  if (isWinner) {
-    showWinner();
-  }
 
   ship.show();
   ship.move();
@@ -47,8 +39,18 @@ function draw() {
   let edge = false;
   let allInvadersDestroyed = true; // Variable para comprobar si todos los invasores han sido destruidos
 
-  for (let i = 0; i < 10; i++) {
-    for (let j = 0; j < 5; j++) {
+  if (spawnAnimation) {
+    spawnInvadersAnimation(animationIndex);
+    animationIndex++;
+    if (animationIndex >= 50) {
+      spawnAnimation = false;
+      animationIndex = 0;
+    }
+    return;
+  }
+
+  for (let i = 0; i < invadersHeight; i++) {
+    for (let j = 0; j < invadersWidth; j++) {
       if (invaders[i][j] === null) {
         continue;
       }
@@ -63,7 +65,9 @@ function draw() {
       }
       for (let k = shipBullets.length - 1; k >= 0; k--) {
         if (shipBullets[k].hits(invaders[i][j])) {
-          explosions.push(new Explosion(invaders[i][j].x, invaders[i][j].y));
+          explosions.push(
+            new Explosion(invaders[i][j].x, invaders[i][j].y, "invader"),
+          );
           score += getInvaderScores(invaders[i][j].type);
           invaders[i].splice(j, 1, null);
           shipBullets.splice(k, 1);
@@ -75,12 +79,17 @@ function draw() {
   }
 
   if (allInvadersDestroyed) {
-    isWinner = true; // Todos los invasores han sido destruidos
+    spawnAnimation = true;
+    shipBullets = [];
+    invaderBullets = [];
+    explosions = [];
+    spawnInvaders();
+    allInvadersDestroyed = false;
   }
 
   if (edge) {
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 5; j++) {
+    for (let i = 0; i < invadersHeight; i++) {
+      for (let j = 0; j < invadersWidth; j++) {
         if (invaders[i][j] === null) {
           continue;
         }
@@ -105,41 +114,54 @@ function draw() {
   }
 
   for (let i = invaderBullets.length - 1; i >= 0; i--) {
+    if (invaderBullets[i].y > height - 70) {
+      invaderBullets.splice(i, 1);
+    }
+    if (invaderBullets[i] == null) {
+      continue;
+    }
     invaderBullets[i].update();
     invaderBullets[i].draw();
     if (invaderBullets[i].hits(ship)) {
-      showGameOver();
-    }
-    if (invaderBullets[i].y > height) {
+      ship_lives--;
+      //explosions.push(new Explosion(ship.x, ship.y, "ship"));
+      ship.explode();
       invaderBullets.splice(i, 1);
+      if (ship_lives === 0) {
+        localStorage.setItem("highScore", Math.max(highScore, score));
+        showGameOver();
+      }
     }
   }
 }
 
-// Función para manejar el fin del juego
-function showGameOver() {
-  textAlign(CENTER, CENTER);
-  textSize(64);
-  fill(255, 0, 0); // Rojo para el "Game Over"
-  text("GAME OVER", width / 2, height / 2);
-
-  textSize(32);
-  fill(255, 255, 255); // Color blanco para el puntaje
-  text("Score: " + score, width / 2, height / 2 + 60); // Ajusta la posición según sea necesario
-
-  noLoop(); // Detener el juego
+function spawnInvaders() {
+  invaders = [];
+  for (let i = 0; i < invadersHeight; i++) {
+    invaders.push([]);
+    for (let j = 0; j < invadersWidth; j++) {
+      if (j === 0) {
+        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "a"));
+      } else if (j === 1 || j === 2) {
+        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "b"));
+      } else {
+        invaders[i].push(new Invader(100 + i * 60, 100 + j * 60, "c"));
+      }
+    }
+  }
 }
 
-function showWinner() {
-  textAlign(CENTER, CENTER);
-  textSize(64);
-  fill(255, 255, 0);
-  text("WINNER", width / 2, height / 2);
-
-  textSize(32);
-  fill(255, 255, 255);
-  text("Score: " + score, width / 2, height / 2 + 60);
-  noLoop();
+function spawnInvadersAnimation(index) {
+  let n = 0;
+  for (let i = 0; i < invadersHeight; i++) {
+    for (let j = 0; j < invadersWidth; j++) {
+      invaders[i][j].showNoAnimation();
+      n++;
+      if (index === n) {
+        return;
+      }
+    }
+  }
 }
 
 function keyReleased() {
@@ -149,8 +171,12 @@ function keyReleased() {
 }
 
 function keyPressed() {
+  if (spawnAnimation) {
+    return;
+  }
   if (key === " ") {
-    shipBullets.push(new Bullet(ship.x, height - 20, "player"));
+    if (shipBullets.length < 1 && !ship.exploded)
+      shipBullets.push(new Bullet(ship.x, ship.y, "player"));
   } else if (keyCode === RIGHT_ARROW) {
     ship.setDir(1);
   } else if (keyCode === LEFT_ARROW) {

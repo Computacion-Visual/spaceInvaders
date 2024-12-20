@@ -14,15 +14,15 @@ class Bullet {
     this.y = y;
     this.speed = getBulletVel(type);
     this.type = type;
-    this.width = 6;
-    this.height = 14;
+    this.width = 2 * 2;
+    this.height = 8 * 2;
     this.sprite = new Sprite(
       getBulletSprites(type),
       this.width,
       this.height,
       0.3,
     );
-    this.radius = 16;
+    this.radius = 8;
   }
 
   update() {
