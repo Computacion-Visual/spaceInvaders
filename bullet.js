@@ -22,7 +22,7 @@ class Bullet {
       this.height,
       0.3,
     );
-    this.radius = 8;
+    this.radius = 4;
   }
 
   update() {
@@ -68,7 +68,7 @@ function getBulletSprites(type) {
 function getBulletVel(type) {
   switch (type) {
     case "player":
-      return -12;
+      return -11;
     case "a":
       return 10;
     case "b":
