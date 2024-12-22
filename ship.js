@@ -48,7 +48,7 @@ class Ship {
       shipExplosionSprites,
       this.width,
       this.height,
-      0.1,
+      0.1
     );
   }
 }

@@ -12,8 +12,9 @@ class Explosion {
       getExplosionSprites(type),
       this.width,
       this.height,
-      0.2,
+      0.2
     );
+      
   }
 
   show() {

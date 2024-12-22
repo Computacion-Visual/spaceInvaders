@@ -8,14 +8,30 @@ const invadersWidth = 5;
 const invadersHeight = 10;
 let ufo = null;
 let showUFO = false;
-let screen = 0; // 0 = menu, 1 = Credits, 2 = game
+let Screen = 0; // 0 = menu, 1 = Credits, 2 = game
 let fontTitle;
 let fontBody;
 let ufoMenu;
 let paused = false;
-
+let ExplosionSound,VolumenSounds=0.4;
+let InvaderKilledSound,ShootSound,Ufo_HighPitchSound,Ufo_LowPitchSound;
+let ufoSoundPlaying = false;
+// Definir los sonidos en spaceInvaders.js o en el archivo adecuado
+/*let FastInvader1Sound;
+let FastInvader2Sound;
+let FastInvader3Sound;
+let FastInvader4Sound;
+let invaderSoundIndex = 4; // Índice para controlar qué sonido reproducir*/
 
 function preload() {
+  /*FastInvader1Sound = loadSound('assets/sounds/fastinvader1.wav');
+  FastInvader2Sound = loadSound('assets/sounds/fastinvader2.wav');
+  FastInvader3Sound = loadSound('assets/sounds/fastinvader3.wav');
+  FastInvader4Sound = loadSound('assets/sounds/fastinvader4.wav');*/
+  InvaderKilledSound = loadSound('assets/sounds/invaderKilled.wav');
+  ExplosionSound =loadSound('assets/sounds/explosion.wav');
+  ShootSound = loadSound('assets/sounds/shoot.wav');
+  Ufo_LowPitchSound = loadSound('assets/sounds/ufo_lowpitch.wav');
   ship_sprite = loadShipSprites();
   invaderA_sprites = loadInvaderASprites();
   invaderB_sprites = loadInvaderBSprites();
@@ -44,11 +60,11 @@ function setup() {
 }
 
 function draw() {
-  if (screen === 0) {
+  if (Screen === 0) {
     menu();
-  } else if (screen === 1) {
+  } else if (Screen === 1) {
     credits();
-  } else if (screen === 2) {
+  } else if (Screen === 2) {
     game();
   }
 }
@@ -80,6 +96,34 @@ function game() {
     }
     return;
   }
+ /*// Reproducir el sonido correspondiente al movimiento del invader
+  if (invaderSoundIndex === 1  )
+  {
+    FastInvader1Sound.setVolume(VolumenSounds);
+    FastInvader1Sound.rate(0.5);
+    FastInvader1Sound.play();
+  }
+  else if(invaderSoundIndex === 2  )
+  {
+    FastInvader2Sound.setVolume(VolumenSounds);
+    FastInvader2Sound.rate(0.5);
+    FastInvader2Sound.play();
+  }
+  else if(invaderSoundIndex === 3 )
+  {
+    FastInvader3Sound.setVolume(VolumenSounds);
+    FastInvader3Sound.rate(0.5);
+    FastInvader3Sound.play();
+  }
+  else
+  {
+    FastInvader4Sound.setVolume(VolumenSounds);
+    FastInvader4Sound.rate(0.5);
+    FastInvader4Sound.play();
+  }
+
+  // Cambiar al siguiente sonido en el array
+  invaderSoundIndex = (invaderSoundIndex + 1) % 4;*/
 
   for (let i = 0; i < invadersHeight; i++) {
     for (let j = 0; j < invadersWidth; j++) {
@@ -87,6 +131,8 @@ function game() {
         continue;
       }
       allInvadersDestroyed = false; // Si encontramos al menos un invasor, no hemos ganado todavía
+      
+      
       invaders[i][j].show();
       invaders[i][j].move();
       if (invaders[i][j].gonnaShoot()) {
@@ -105,8 +151,8 @@ function game() {
                 explosions.push(
                   new Explosion(
                     shield.shieldParts[p].x + shieldWidth / 2,
-                    shield.shieldParts[p].y,
-                  ),
+                    shield.shieldParts[p].y
+                  )
                 );
                 deleteBullet = true;
                 break;
@@ -120,7 +166,7 @@ function game() {
 
         if (shipBullets[k].hits(invaders[i][j])) {
           explosions.push(
-            new Explosion(invaders[i][j].x, invaders[i][j].y, "invader"),
+            new Explosion(invaders[i][j].x, invaders[i][j].y, "invader")
           );
           score += getInvaderScores(invaders[i][j].type);
           invaders[i].splice(j, 1, null);
@@ -128,6 +174,10 @@ function game() {
           shipBullets.splice(k, 1);
           // Incrementa la velocidad global de los invasores
           globalInvaderSpeed += 0.025;
+          ExplosionSound.setVolume(VolumenSounds-0.3);
+          ExplosionSound.play();
+          InvaderKilledSound.setVolume(VolumenSounds - 0.3);
+          InvaderKilledSound.play();
         }
         if (deleteBullet) {
           shipBullets.splice(k, 1);
@@ -149,12 +199,37 @@ function game() {
 
   if (showUFO) {
     ufo.show();
-    ufo.move();
-    if (ufo.x > width) {
-      showUFO = false;
-    } else if (ufo.x < 0) {
-      showUFO = false;
+     // Reproducir el sonido solo si no está sonando
+    if (!ufoSoundPlaying) {
+      Ufo_LowPitchSound.setVolume(VolumenSounds - 0.2);  // Ajustar el volumen
+      Ufo_LowPitchSound.play();
+      ufoSoundPlaying = true;
     }
+    
+    ufo.move();
+    if (ufo.x > width || ufo.x < 0) {
+      // Desvanecer el volumen poco a poco
+      let fadeOutDuration = 1000; // Duración del fade out en milisegundos
+      let fadeOutInterval = 100; // Intervalo entre actualizaciones de volumen
+      let fadeOutStep = 1 / (fadeOutDuration / fadeOutInterval); // Reducir el volumen en cada paso
+    
+      let currentVolume = Ufo_LowPitchSound.getVolume(); // Obtener el volumen actual
+      
+      // Función para reducir el volumen gradualmente
+      let fadeOut = setInterval(() => {
+        currentVolume -= fadeOutStep;
+        
+        if (currentVolume <= 0) {
+          clearInterval(fadeOut); // Detener el intervalo cuando el volumen llega a 0
+          Ufo_LowPitchSound.stop(); // Detener el sonido
+          showUFO = false;
+          ufoSoundPlaying = false;  // Permitir que se reproduzca de nuevo la próxima vez
+        } else {
+          Ufo_LowPitchSound.setVolume(currentVolume); // Reducir el volumen
+        }
+      }, fadeOutInterval);
+    }
+    
     for (let k = shipBullets.length - 1; k >= 0; k--) {
       if (ufo == null) {
         continue;
@@ -165,10 +240,19 @@ function game() {
         showUFO = false;
         ufo = null;
         shipBullets.splice(k, 1);
+        ExplosionSound.setVolume(VolumenSounds);
+        ExplosionSound.play();
+        InvaderKilledSound.setVolume(VolumenSounds - 0.3);
+        InvaderKilledSound.play();
       }
     }
   }
-
+  
+  // Detectar cuando el sonido termine para poder reproducirlo nuevamente
+  Ufo_LowPitchSound.onended(function() {
+    ufoSoundPlaying = false;  // El sonido ha terminado, ahora puede sonar nuevamente
+  });
+  
   if (allInvadersDestroyed) {
     spawnAnimation = true;
     shipBullets = [];
@@ -246,6 +330,8 @@ function game() {
       ship_lives--;
       //explosions.push(new Explosion(ship.x, ship.y, "ship"));
       ship.explode();
+      ExplosionSound.setVolume(VolumenSounds);
+      ExplosionSound.play();
       invaderBullets.splice(i, 1);
       if (ship_lives === 0) {
         localStorage.setItem("highScore", Math.max(highScore, score));
@@ -311,7 +397,7 @@ function reset() {
 }
 
 function keyReleased() {
-  if (screen === 2) {
+  if (Screen === 2) {
     if (keyCode === RIGHT_ARROW || keyCode === LEFT_ARROW) {
       ship.setDir(0);
     }
@@ -321,39 +407,43 @@ function keyReleased() {
 function keyPressed() {
 
   //Menu
-  if (screen === 0) {
+  if (Screen === 0) {
     if (key === "C" || key === "c") {
-      screen = 1;
+      Screen = 1;
     }
 
     if (keyCode === 13) {
-      screen = 2;
+      Screen = 2;
       spawnInvaders();
       spawnShields();
     }
   }
   //Creditos
-  else if (screen === 1) {
+  else if (Screen === 1) {
     if (keyCode == 27) {
-      screen = 0;
+      Screen = 0;
     }
   }
 
   //Juego
-  else if (screen === 2) {
+  else if (Screen === 2) {
     if (spawnAnimation) {
       return;
     }
     if (key === " ") {
       if (shipBullets.length < 1 && !ship.exploded)
+      {
         shipBullets.push(new Bullet(ship.x, ship.y, "player"));
+        ShootSound.setVolume(VolumenSounds-0.3)
+        ShootSound.play();
+      }
     } else if (keyCode === RIGHT_ARROW) {
       ship.setDir(1);
     } else if (keyCode === LEFT_ARROW) {
       ship.setDir(-1);
     } else if (keyCode === 27) {
       reset();
-      screen = 0;
+      Screen = 0;
 
       if (!isLooping()) {
         loop();

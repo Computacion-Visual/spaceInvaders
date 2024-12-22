@@ -5,6 +5,8 @@ let invaderC_sprites = [];
 let UFO_sprites = [];
 let invaderBullets = [];
 
+
+
 /** Class representing an invader */
 class Invader {
   /**
@@ -24,7 +26,7 @@ class Invader {
       getInvaderSprites(type),
       this.width,
       this.height,
-      0.1,
+      0.1
     );
   }
 
@@ -39,6 +41,7 @@ class Invader {
   move() {
     this.x += this.speed * this.direction;
   }
+
 
   shiftDown() {
     this.y += this.height / 2;
