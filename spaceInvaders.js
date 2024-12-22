@@ -8,6 +8,11 @@ const invadersWidth = 5;
 const invadersHeight = 10;
 let ufo = null;
 let showUFO = false;
+let screen = 0; // 0 = menu, 1 = Credits, 2 = game
+let fontTitle;
+let fontBody;
+let ufoMenu;
+
 
 function preload() {
   ship_sprite = loadShipSprites();
@@ -21,6 +26,10 @@ function preload() {
   invaderCBulletSprites = loadInvaderCBulletSprites();
   shipExplosionSprites = loadShipExplosionSprites();
   UFO_sprites = loadUFOSprites();
+
+  fontTitle=loadFont('/assets/fonts/KarmaticArcade-6Yrp1.ttf');
+  fontBody=loadFont('/assets/fonts/PressStart2P-vaV7.ttf');
+  ufoMenu=loadImage('/assets/ufo/ufo1.png');
 }
 
 function setup() {
@@ -29,11 +38,22 @@ function setup() {
   ship = new Ship();
   ship_lives = 3;
   highScore = localStorage.getItem("highScore") || 0;
-  spawnInvaders();
-  spawnShields();
+  //spawnInvaders();
+  //spawnShields();
 }
 
 function draw() {
+  if (screen === 0) {
+    menu();
+  } else if (screen === 1) {
+    credits();
+  } else if (screen === 2) {
+    game();
+  }
+}
+
+
+function game() {
   frameRate(30);
   background(0);
 
@@ -270,22 +290,73 @@ function spawnShields() {
   }
 }
 
+function reset() {
+  /*
+  Reiniciar vidas
+  Reinicar puntaje
+  Reiniciar velocidad de invasores
+  Reiniciar escudos
+  Reiniciar nave
+  Reiniciar invasores
+  Reinicar disparos
+  */
+  ship = new Ship();
+  ship_lives = 3;
+  score = 0;
+  globalInvaderSpeed = 1;
+  spawnAnimation=true;
+  spawnInvaders();
+  spawnShields();
+  shipBullets = [];
+  invaderBullets = [];
+}
+
 function keyReleased() {
-  if (keyCode === RIGHT_ARROW || keyCode === LEFT_ARROW) {
-    ship.setDir(0);
+  if (screen === 2) {
+    if (keyCode === RIGHT_ARROW || keyCode === LEFT_ARROW) {
+      ship.setDir(0);
+    }
   }
 }
 
 function keyPressed() {
-  if (spawnAnimation) {
-    return;
+
+  //Menu
+  if (screen === 0) {
+    if (key === "C" || key === "c") {
+      screen = 1;
+    }
+
+    if (keyCode === 13) {
+      screen = 2;
+      spawnInvaders();
+      spawnShields();
+    }
   }
-  if (key === " ") {
-    if (shipBullets.length < 1 && !ship.exploded)
-      shipBullets.push(new Bullet(ship.x, ship.y, "player"));
-  } else if (keyCode === RIGHT_ARROW) {
-    ship.setDir(1);
-  } else if (keyCode === LEFT_ARROW) {
-    ship.setDir(-1);
+  //Creditos
+  else if (screen === 1) {
+    if (keyCode == 27) {
+      screen = 0;
+    }
+  }
+
+  //Juego
+  else if (screen === 2) {
+    if (spawnAnimation) {
+      return;
+    }
+    if (key === " ") {
+      if (shipBullets.length < 1 && !ship.exploded)
+        shipBullets.push(new Bullet(ship.x, ship.y, "player"));
+    } else if (keyCode === RIGHT_ARROW) {
+      ship.setDir(1);
+    } else if (keyCode === LEFT_ARROW) {
+      ship.setDir(-1);
+    } else if (keyCode === 27) {
+      reset();
+      screen = 0;
+    } else if (key === 'r' || key === 'R') {
+      reset();
+    }
   }
 }

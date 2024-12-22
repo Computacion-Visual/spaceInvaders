@@ -7,8 +7,8 @@ function showHUD() {
 function showScore() {
   fill(255);
   textSize(24);
-  text("SCORE", 20, 30);
-  text(score === 0 ? "0000" : score.toString().padStart(4, "0"), 20, 60);
+  text("SCORE", 80, 30);
+  text(score === 0 ? "0000" : score.toString().padStart(4, "0"), 80, 60);
 }
 
 function showHighScore() {
