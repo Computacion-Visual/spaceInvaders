@@ -12,6 +12,7 @@ let screen = 0; // 0 = menu, 1 = Credits, 2 = game
 let fontTitle;
 let fontBody;
 let ufoMenu;
+let paused = false;
 
 
 function preload() {
@@ -248,6 +249,7 @@ function game() {
       invaderBullets.splice(i, 1);
       if (ship_lives === 0) {
         localStorage.setItem("highScore", Math.max(highScore, score));
+        highScore = localStorage.getItem("highScore") || 0;
         showGameOver();
       }
     }
@@ -291,15 +293,6 @@ function spawnShields() {
 }
 
 function reset() {
-  /*
-  Reiniciar vidas
-  Reinicar puntaje
-  Reiniciar velocidad de invasores
-  Reiniciar escudos
-  Reiniciar nave
-  Reiniciar invasores
-  Reinicar disparos
-  */
   ship = new Ship();
   ship_lives = 3;
   score = 0;
@@ -309,6 +302,12 @@ function reset() {
   spawnShields();
   shipBullets = [];
   invaderBullets = [];
+  showUFO = false;
+  ufo = null;
+
+  if (!isLooping()) {
+    loop();
+  }
 }
 
 function keyReleased() {
@@ -355,8 +354,21 @@ function keyPressed() {
     } else if (keyCode === 27) {
       reset();
       screen = 0;
+
+      if (!isLooping()) {
+        loop();
+      }
     } else if (key === 'r' || key === 'R') {
       reset();
+    } else if (key === 'p' || key === 'P') {
+      if (paused) {
+        loop();
+        paused = false;
+      } else {
+        noLoop();
+        paused = true;
+      }
     }
+
   }
 }
