@@ -39,7 +39,7 @@ class Ship {
       this.x,
       0 + this.sprite.width / 2,
       width - this.sprite.width / 2,
-    );
+      );
   }
 
   explode() {
@@ -49,6 +49,6 @@ class Ship {
       this.width,
       this.height,
       0.1
-    );
+      );
   }
 }

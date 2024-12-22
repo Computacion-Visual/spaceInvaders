@@ -13,8 +13,7 @@ class Explosion {
       this.width,
       this.height,
       0.2
-    );
-      
+      );
   }
 
   show() {
@@ -25,11 +24,11 @@ class Explosion {
 
 function getExplosionSprites(type) {
   switch (type) {
-    case "invader":
-      return invaderExplosionSprites;
-    case "ship":
-      return shipExplosionSprites;
-    default:
-      return invaderExplosionSprites;
+  case "invader":
+    return invaderExplosionSprites;
+  case "ship":
+    return shipExplosionSprites;
+  default:
+    return invaderExplosionSprites;
   }
 }

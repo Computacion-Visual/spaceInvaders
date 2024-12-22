@@ -18,8 +18,8 @@ function showHighScore() {
   text(
     highScore === 0 ? "0000" : highScore.toString().padStart(4, "0"),
     width - 150,
-    60,
-  );
+    60
+    );
 }
 
 // Función para manejar el fin del juego
@@ -61,6 +61,6 @@ function showLives() {
       height - 30,
       ship.width,
       ship.height,
-    );
+      );
   }
 }

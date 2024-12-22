@@ -27,7 +27,7 @@ class Invader {
       this.width,
       this.height,
       0.1
-    );
+      );
   }
 
   show() {
@@ -53,21 +53,21 @@ class Invader {
 
     // Modificamos la probabilidad de disparo según el tipo de invasor y la velocidad global
     switch (this.type) {
-      case "c":
-        shootChance = 0.0005 + globalInvaderSpeed * 0.002; // Aumento de probabilidad con la velocidad
-        break;
-      case "b":
-        shootChance = 0.001 + globalInvaderSpeed * 0.003;
-        break;
-      case "a":
-        shootChance = 0.002 + globalInvaderSpeed * 0.004;
-        break;
-      case "ufo":
-        shootChance = 0;
-        break;
-      default:
-        shootChance = 0.0005 + globalInvaderSpeed * 0.002;
-        break;
+    case "c":
+      shootChance = 0.0005 + globalInvaderSpeed * 0.002; // Aumento de probabilidad con la velocidad
+      break;
+    case "b":
+      shootChance = 0.001 + globalInvaderSpeed * 0.003;
+      break;
+    case "a":
+      shootChance = 0.002 + globalInvaderSpeed * 0.004;
+      break;
+    case "ufo":
+      shootChance = 0;
+      break;
+    default:
+      shootChance = 0.0005 + globalInvaderSpeed * 0.002;
+      break;
     }
 
     // Controlamos que la probabilidad no sea superior a 1
@@ -85,31 +85,31 @@ class Invader {
 /** @param {string} type */
 function getInvaderSprites(type) {
   switch (type) {
-    case "c":
-      return invaderC_sprites;
-    case "b":
-      return invaderB_sprites;
-    case "a":
-      return invaderA_sprites;
-    case "ufo":
-      return UFO_sprites;
-    default:
-      return invaderA_sprites;
+  case "c":
+    return invaderC_sprites;
+  case "b":
+    return invaderB_sprites;
+  case "a":
+    return invaderA_sprites;
+  case "ufo":
+    return UFO_sprites;
+  default:
+    return invaderA_sprites;
   }
 }
 
 /** @param {string} type */
 function getInvaderScores(type) {
   switch (type) {
-    case "c":
-      return 10;
-    case "b":
-      return 20;
-    case "a":
-      return 40;
-    case "ufo":
-      return 100;
-    default:
-      return 10;
+  case "c":
+    return 10;
+  case "b":
+    return 20;
+  case "a":
+    return 40;
+  case "ufo":
+    return 100;
+  default:
+    return 10;
   }
 }
